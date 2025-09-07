@@ -1,0 +1,154 @@
+/* -------- Theme & Resets -------- */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+.header {
+    display: flex;
+    align-items: center;      /* vertically center back button & title */
+    justify-content: flex-start;
+    gap: 8px;                 /* space between button and title */
+    margin-bottom: 20px;
+}
+.header h2 {
+    margin-left: 8px; /* spacing only between button and title */
+    margin-top: 0;    /* keep aligned vertically */
+    margin-bottom: 0;            /* remove default margin so it aligns cleanly */
+}
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'NotoSans-Regular', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    padding: 24px;
+}
+h1 { 
+    font-family: 'NotoSans-SemiBold', 'NotoSans-Regular', sans-serif;
+    font-size: clamp(22px, 2.4vw, 32px);
+    margin: 0 0 12px 0;
+    letter-spacing: 0.2px;
+ }
+p { 
+    color: var(--muted);
+    margin: 0 0 20px 0;
+ }
+
+.concepts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 12px;
+}
+.concepts li { margin: 0; }
+
+.concept-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    min-height: 44px; /* close to SwiftUI's minHeight:34 with icon spacing */
+    border-radius: 10px; /* RoundedRectangle(cornerRadius: 10) */
+    background: var(--card); /* Color.primaryBackground */
+    border: 1px solid rgba(255,255,255,0.85); /* .stroke(.white, lineWidth: 1) */
+    text-decoration: none;
+    color: var(--text);
+    /* two layered shadows to emulate the SwiftUI neumorphic look */
+    box-shadow:
+        -10px -10px 15px rgba(255,255,255,0.80),  /* light top-left */
+            10px  10px 15px rgba(174,174,192,0.20);  /* soft dark bottom-right (#AEAEC0 @ 20%) */
+    transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+    will-change: transform, box-shadow, filter;
+}
+.concept-card:hover {
+    filter: brightness(1.02);
+    box-shadow:
+        -12px -12px 18px rgba(255,255,255,0.85),
+            12px  12px 18px rgba(174,174,192,0.28);
+}
+.concept-card:active {
+    transform: translateY(1px);
+    box-shadow:
+        -6px -6px 10px rgba(255,255,255,0.65),
+            6px  6px 10px rgba(174,174,192,0.18);
+}
+.concept-card:focus-visible {
+    outline: none;
+    box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent),
+        -10px -10px 15px rgba(255,255,255,0.80),
+            10px  10px 15px rgba(174,174,192,0.20);
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 20px;
+}
+.icon img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+}
+.title {
+    font-family: 'NotoSans-SemiBold', 'NotoSans-Regular', sans-serif;
+    font-size: 16px;
+    letter-spacing: .2px;
+}
+.chev {
+    margin-left: auto;
+    font-size: 20px;
+    color: var(--muted);
+    transition: transform .2s ease, color .2s ease;
+}
+.concept-card:hover .chev {
+    transform: translateX(2px);
+    color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .concept-card, .chev { transition: none; }
+}
+
+
+/* -------- Back Button -------- */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--card); /* primary background */
+    border: 1px solid rgba(255,255,255,0.85);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 20px; /* for chevron-left icon */
+    box-shadow:
+        -6px -6px 10px rgba(255,255,255,0.80),
+         6px 6px 10px rgba(174,174,192,0.20);
+    transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
+    line-height: 1;
+    font-size: 22px;
+}
+.back-button:hover {
+    filter: brightness(1.02);
+    box-shadow:
+        -8px -8px 12px rgba(255,255,255,0.85),
+         8px 8px 12px rgba(174,174,192,0.28);
+}
+.back-button:active {
+    transform: translateY(1px);
+    box-shadow:
+        -4px -4px 8px rgba(255,255,255,0.65),
+         4px 4px 8px rgba(174,174,192,0.18);
+}
+.back-button .chev {
+    /* existing styles */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}

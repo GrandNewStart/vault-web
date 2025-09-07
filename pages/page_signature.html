@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature - Cryptography of the Vault</title>
+    <link rel="stylesheet" href="../assets/styles/colors.css">
+    <link rel="stylesheet" href="../assets/styles/fonts.css">
+    <link rel="stylesheet" href="../assets/styles/common.css">
+</head>
+<body>
+    <div class="header">
+    <a href="../index.html" class="back-button" aria-label="Back to home">
+        <img src="../assets/images/icon_chevron_left.png" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+    </a>
+    <h2>Signature</h2>
+    </div>
+    <div class="content">
+        <p>This page will describe the digital signature techniques used in the Vault.</p>
+    </div>
+
+    <script>
+    // Apply theme via URL fragment: #mode=dark&platform=ios
+    const rawHash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash;
+    const params = new URLSearchParams(rawHash);
+    const mode = params.get('mode');
+    const platform = params.get('platform');
+    const root = document.documentElement;
+    if (mode === 'dark') {
+        root.setAttribute('data-theme', 'dark');
+    } else {
+        root.removeAttribute('data-theme');
+    }
+    // Preserve fragment when navigating back to index
+    const backAnchor = document.querySelector('a.back-button');
+    if (backAnchor) {
+        const base = backAnchor.getAttribute('href') || '../index.html';
+        const frag = location.hash || '';
+        backAnchor.setAttribute('href', base + frag);
+    }
+    </script>
+</body>
+</html>

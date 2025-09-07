@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography of the Vault</title>
+    <link rel="stylesheet" href="./assets/styles/colors.css">
+    <link rel="stylesheet" href="./assets/styles/fonts.css">
+    <link rel="stylesheet" href="./assets/styles/common.css">
+    <style></style>
+</head>
+<body>
+    <div class="header">
+    <a id="back" class="back-button" aria-label="Back to home">
+        <img src="./assets/images/icon_chevron_left.png" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+    </a>
+    <h1>Cryptography of the <img src="./assets/images/logo_text.png" alt="Vault Logo" style="height: 1em; vertical-align: middle;"></h1>
+    </div>
+    
+    <p>This is an archive of cryptographic knowledge of the Vault app. This is a work-in-progress and contents will be continuously updated.</p>
+    <ul class="concepts">
+        <li>
+            <a class="concept-card" href="./pages/page_symmetric.html">
+                <span class="title">Symmetric Encryption</span>
+                <span class="chev" aria-hidden="true">›</span>
+            </a>
+        </li>
+        <li>
+            <a class="concept-card" href="./pages/page_asymmetric.html">
+                <span class="title">Asymmetric Encryption</span>
+                <span class="chev" aria-hidden="true">›</span>
+            </a>
+        </li>
+        <li>
+            <a class="concept-card" href="./pages/page_hash.html">
+                <span class="title">Hash</span>
+                <span class="chev" aria-hidden="true">›</span>
+            </a>
+        </li>
+        <li>
+            <a class="concept-card" href="./pages/page_signature.html">
+                <span class="title">Signatures</span>
+                <span class="chev" aria-hidden="true">›</span>
+            </a>
+        </li>
+        <li>
+            <a class="concept-card" href="./pages/page_key_exchange.html">
+                <span class="title">Key Exchange</span>
+                <span class="chev" aria-hidden="true">›</span>
+            </a>
+        </li>
+        <li>
+            <a class="concept-card" href="./pages/page_elliptic_curve.html">
+                <span class="title">Elliptic Curve</span>
+                <span class="chev" aria-hidden="true">›</span>
+            </a>
+        </li>
+    </ul>
+<script>
+console.log("URL:", location.href);
+// Read parameters from the URL fragment instead of the query string, e.g. #mode=dark&platform=ios
+const rawHash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash;
+const params = new URLSearchParams(rawHash);
+const mode = params.get('mode');
+const platform = params.get('platform');
+const root = document.documentElement;
+if (mode === 'dark') {
+    root.setAttribute('data-theme', 'dark');
+} else {
+    root.removeAttribute('data-theme');
+}
+
+const backButton = document.getElementById('back');
+if (platform !== 'ios' && platform !== 'android') {
+    backButton.style.display = 'none';
+}
+backButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.webkit?.messageHandlers?.vault) {
+        window.webkit.messageHandlers.vault.postMessage({ action: 'dismiss' });
+    } else {
+        console.log('[vault] Not running inside WKWebView');
+        // Optional fallback when browsing on desktop:
+        // window.history.back();
+    }
+});
+
+const frag = location.hash; // includes the leading "#" if present
+document.querySelectorAll('a.concept-card').forEach(a => {
+  const url = new URL(a.getAttribute('href'), location.href);
+  // Only add if current URL has NO hash; propagate our current fragment
+  if (frag && !url.hash) {
+    url.hash = frag;
+    a.setAttribute('href', url.pathname + url.search + url.hash);
+  }
+});
+</script>
+</body>
+<footer>
+    <p style="font-size: 0.9em; margin-top: 2em; text-align: center; color: #666;">
+        © 2025 <a href="http://bluelemonade.co.kr" target="_blank" style="color: #666; text-decoration: none;">Blue Lemonade</a>
+    </p>
+</footer>
+</html>
