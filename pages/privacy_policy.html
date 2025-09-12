@@ -17,6 +17,9 @@
 <body>
   <div class="wrap">
     <header class="header">
+      <a id="back" href="../index.html" class="back-button" aria-label="Back to home">
+        <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+      </a>
       <h1>Vault – Privacy Policy</h1>
     </header>
     <div class="meta">Last updated: <strong>September 12, 2025</strong> (Asia/Seoul)</div>
@@ -150,8 +153,9 @@
 
     <footer>
       <span class="badge">Version: 1.0.0</span>
-      <span style="margin-left:8px" class="badge">Jurisdiction: To be defined</span>
-      <p style="margin-top:10px">Tip: You can host this page and link it from the App Store / Play Store listings and within the app’s settings.</p>
+      <p style="font-size: 0.9em; margin-top: 2em; text-align: center; color: #666;">
+        © 2025 <a href="http://bluelemonade.co.kr" target="_blank" style="color: #666; text-decoration: none;">Blue Lemonade</a>
+    </p>
     </footer>
   </div>
   <script>
@@ -187,22 +191,24 @@
   </script>
   <script>
     (function(){
-      const btn = document.getElementById('backBtn');
+      const rawHash = location.hash.startsWith('#') ? location.hash.slice(1) : location.hash;
+      const params = new URLSearchParams(rawHash);
+      const platform = params.get('platform');
+      const btn = document.getElementById('back');
       if (!btn) return;
+      if (platform !== 'ios' && platform !== 'android') {
+        btn.style.display = 'none';
+      }
       btn.addEventListener('click', function(e){
         e.preventDefault();
-        // Try native bridge first (if present), else fallback to history/back
-        try {
-          if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.dismiss) {
-            window.webkit.messageHandlers.dismiss.postMessage({});
-            return;
-          }
-          if (window.Android && typeof window.Android.dismiss === 'function') {
-            window.Android.dismiss();
-            return;
-          }
-        } catch(_){}
-        if (history.length > 1) history.back();
+        e.stopPropagation();
+        if (window.webkit?.messageHandlers?.vault) {
+            window.webkit.messageHandlers.vault.postMessage({ action: 'dismiss' });
+        } else {
+            console.log('[vault] Not running inside WKWebView');
+            // Optional fallback when browsing on desktop:
+            // window.history.back();
+        }
       });
     })();
   </script>
