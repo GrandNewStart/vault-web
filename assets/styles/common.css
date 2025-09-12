@@ -53,29 +53,29 @@ p {
     color: var(--text);
     /* two layered shadows to emulate the SwiftUI neumorphic look */
     box-shadow:
-        -10px -10px 15px rgba(255,255,255,0.80),  /* light top-left */
-            10px  10px 15px rgba(174,174,192,0.20);  /* soft dark bottom-right (#AEAEC0 @ 20%) */
+        -10px -10px 15px var(--shadow1),  /* light top-left */
+            10px  10px 15px var(--shadow2);  /* soft dark bottom-right (#AEAEC0 @ 20%) */
     transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
     will-change: transform, box-shadow, filter;
 }
 .concept-card:hover {
     filter: brightness(1.02);
     box-shadow:
-        -12px -12px 18px rgba(255,255,255,0.85),
-            12px  12px 18px rgba(174,174,192,0.28);
+        -12px -12px 18px var(--shadow3),
+            12px  12px 18px var(--shadow4);
 }
 .concept-card:active {
     transform: translateY(1px);
     box-shadow:
-        -6px -6px 10px rgba(255,255,255,0.65),
-            6px  6px 10px rgba(174,174,192,0.18);
+        -6px -6px 10px var(--shadow3),
+            6px  6px 10px var(--shadow4);
 }
 .concept-card:focus-visible {
     outline: none;
     box-shadow:
         0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent),
-        -10px -10px 15px rgba(255,255,255,0.80),
-            10px  10px 15px rgba(174,174,192,0.20);
+        -10px -10px 15px var(--shadow3),
+            10px  10px 15px var(--shadow4);
 }
 
 .icon {
@@ -90,6 +90,17 @@ p {
     height: 18px;
     object-fit: contain;
     display: block;
+}
+.icon-img {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+  filter: brightness(0) saturate(100%) invert(0%) sepia(0%) 
+          saturate(0%) hue-rotate(0deg) brightness(1) contrast(1);
+  /* Default black */
+}
+html[data-theme="dark"] .icon-img {
+  filter: brightness(0) saturate(100%) invert(100%);
 }
 .title {
     font-family: 'NotoSans-SemiBold', 'NotoSans-Regular', sans-serif;
@@ -126,8 +137,8 @@ p {
     text-decoration: none;
     font-size: 20px; /* for chevron-left icon */
     box-shadow:
-        -6px -6px 10px rgba(255,255,255,0.80),
-         6px 6px 10px rgba(174,174,192,0.20);
+        -10px -10px 15px var(--shadow1),
+        10px  10px 15px var(--shadow2);
     transition: transform .06s ease, box-shadow .2s ease, filter .2s ease;
     line-height: 1;
     font-size: 22px;
@@ -135,14 +146,14 @@ p {
 .back-button:hover {
     filter: brightness(1.02);
     box-shadow:
-        -8px -8px 12px rgba(255,255,255,0.85),
-         8px 8px 12px rgba(174,174,192,0.28);
+        -8px -8px 12px var(--shadow3),
+         8px 8px 12px var(--shadow4);
 }
 .back-button:active {
     transform: translateY(1px);
     box-shadow:
-        -4px -4px 8px rgba(255,255,255,0.65),
-         4px 4px 8px rgba(174,174,192,0.18);
+        -4px -4px 8px var(--shadow3),
+         4px 4px 8px var(--shadow4);
 }
 .back-button .chev {
     /* existing styles */

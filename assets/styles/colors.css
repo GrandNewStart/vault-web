@@ -8,6 +8,11 @@
     --text: #5F5F5F;
     --muted: #6b7280;
     --accent: #90A3CE;
+    --shadow1: #FFFFFFCC;
+    --shadow2: #AEAEC033;
+    --shadow3: #FFFFFFFF;
+    --shadow4: #AEAEC0CC;
+    --icon-tint: #5F5F5F; 
 }
 
 html[data-theme="dark"] {
@@ -17,4 +22,9 @@ html[data-theme="dark"] {
     --text: #E5E7EB;
     --muted: #9ca3af;
     --accent: #90A3CE;
+    --shadow1: rgba(92, 89, 89, 0.2);
+    --shadow2: rgba(57, 53, 53, 0.8);
+    --shadow3: rgba(92, 89, 89, 0.8);
+    --shadow4: rgba(57, 53, 53, 1.0);
+    --icon-tint: #E5E7EB; 
 }
