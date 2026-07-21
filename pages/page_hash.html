@@ -3,20 +3,493 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hash - Cryptography of the Vault</title>
+    <title>Cryptographic Hash Functions - Cryptography of the Vault</title>
     <link rel="stylesheet" href="../assets/styles/colors.css">
     <link rel="stylesheet" href="../assets/styles/fonts.css">
     <link rel="stylesheet" href="../assets/styles/common.css">
+    <style>
+        /* Custom neomorphic layout for hash page */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: -8px -8px 16px var(--shadow1), 8px 8px 16px var(--shadow2);
+            transition: all 0.3s ease;
+        }
+
+        html[data-theme="dark"] .info-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            background: var(--bg);
+            color: var(--accent);
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Diagram Styling */
+        .diagram-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2);
+            margin: 16px 0;
+        }
+
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            position: relative;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .diagram-node {
+            background: var(--card);
+            padding: 12px 16px;
+            border-radius: 10px;
+            box-shadow: -4px -4px 8px var(--shadow1), 4px 4px 8px var(--shadow2);
+            font-family: 'NotoSans-Medium', sans-serif;
+            font-size: 0.85rem;
+            text-align: center;
+            min-width: 110px;
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] .diagram-node {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .diagram-arrow {
+            font-size: 1.25rem;
+            color: var(--accent);
+            user-select: none;
+            animation: pulseArrow 2s infinite ease-in-out;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .diagram-key-connection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card);
+            box-shadow: -3px -3px 6px var(--shadow1), 3px 3px 6px var(--shadow2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] .key-icon-container {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .key-icon-container img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .tint-accent {
+            filter: invert(72%) sepia(17%) saturate(594%) hue-rotate(184deg) brightness(88%) contrast(87%);
+        }
+
+        /* Interactive Playground Styling */
+        .playground-tabs {
+            display: flex;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: inset -2px -2px 5px var(--shadow1), inset 2px 2px 5px var(--shadow2);
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--card);
+            color: var(--text);
+            box-shadow: -4px -4px 8px var(--shadow1), 4px 4px 8px var(--shadow2);
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+
+        html[data-theme="dark"] .tab-btn.active {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .playground-panel {
+            display: none;
+            animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .playground-panel.active {
+            display: block;
+        }
+
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 600px) {
+            .playground-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .input-field {
+            background: var(--bg);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text);
+            font-family: 'NotoSans-Regular', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2), 0 0 0 1px var(--accent);
+        }
+
+        textarea.input-field {
+            resize: vertical;
+            min-height: 72px;
+        }
+
+        .output-container {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            min-height: 48px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            color: var(--text);
+            position: relative;
+            user-select: text;
+        }
+
+        .copy-badge {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: var(--card);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.85);
+            box-shadow: -2px -2px 4px var(--shadow1), 2px 2px 4px var(--shadow2);
+            font-family: 'NotoSans-Medium', sans-serif;
+            color: var(--muted);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        html[data-theme="dark"] .copy-badge {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .copy-badge:hover {
+            color: var(--text);
+            filter: brightness(1.05);
+        }
+
+        .copy-badge:active {
+            box-shadow: inset -1px -1px 2px var(--shadow1), inset 1px 1px 2px var(--shadow2);
+        }
+
+        /* Success/Warning Text Classes */
+        .text-success { color: #10B981; }
+        .text-error { color: #EF4444; }
+        html[data-theme="dark"] .text-success { color: #34D399; }
+        html[data-theme="dark"] .text-error { color: #F87171; }
+
+        .bullet-point {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1.1;
+        }
+
+        /* Mobile overrides for long and narrow viewports */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            .info-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .diagram-flow {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .diagram-arrow {
+                transform: rotate(90deg);
+                margin: 4px 0;
+            }
+
+            .diagram-node {
+                width: 100%;
+                max-width: 220px;
+            }
+
+            .playground-tabs {
+                gap: 4px;
+                padding: 4px;
+            }
+
+            .tab-btn {
+                padding: 8px;
+                font-size: 0.78rem;
+            }
+
+            .playground-grid {
+                gap: 12px;
+            }
+
+            .input-field {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseArrow {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-    <a href="../index.html" class="back-button" aria-label="Back to home">
-        <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
-    </a>
-    <h2>Hash</h2>
+        <a href="../index.html" class="back-button" aria-label="Back to home">
+            <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+        </a>
+        <h2>Hash Functions</h2>
     </div>
-    <div class="content">
-        <p>This page will describe the hash techniques used in the Vault.</p>
+
+    <div class="content container">
+        
+        <!-- Intro Card -->
+        <div class="info-card">
+            <div class="badge">Overview</div>
+            <h3>What is a Cryptographic Hash?</h3>
+            <p>A cryptographic hash function is a mathematical process that takes an input of any size (such as a single word or an entire file) and converts it into a <strong>fixed-size string of characters</strong> (the hash output).</p>
+            
+            <p>Think of it like a <strong>digital fingerprint</strong>. Just as a physical fingerprint uniquely identifies a human without revealing their personality or thoughts, a cryptographic hash uniquely identifies a piece of data without exposing its content. Importantly, hashing is a <strong>one-way street</strong>—you can easily generate a fingerprint from a person, but you cannot rebuild the person from the fingerprint.</p>
+        </div>
+
+        <!-- Diagram Card -->
+        <div class="info-card">
+            <div class="badge">Visualization</div>
+            <h3>The One-Way Function</h3>
+            <p>Unlike encryption, hashing is not designed to be reversed. It maps variable input to a fixed-size unique output:</p>
+            
+            <div class="diagram-box">
+                <div class="diagram-flow">
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Input (Variable)</div>
+                        <div style="font-family: 'NotoSans-SemiBold'; font-size: 0.9rem; margin-top: 2px;">"MyPassword123"</div>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-key-connection">
+                        <div class="key-icon-container" style="border-color: var(--accent);">
+                            <img src="../assets/images/icon_key.png" class="tint-accent" alt="Hash Function" />
+                        </div>
+                        <span style="font-size: 0.75rem; font-family: 'NotoSans-SemiBold'; color: var(--accent);">Hash Algorithm</span>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Output (Fixed)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: monospace; word-break: break-all;">5e883f8b...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Playground -->
+        <div class="info-card">
+            <div class="badge">Interactive Tool</div>
+            <h3>Hashing Sandbox</h3>
+            <p>Type text below to watch it hash in real-time. Notice how even a tiny change (like changing a capitalization or adding a period) completely reshapes the output hash. This is called the <strong>avalanche effect</strong>.</p>
+            
+            <div class="playground-tabs">
+                <button class="tab-btn active" onclick="switchTab('single')">🔢 Hash Generator</button>
+                <button class="tab-btn" onclick="switchTab('compare')">⚖️ Hash Comparator</button>
+            </div>
+            
+            <!-- Single Hash Panel -->
+            <div id="single-panel" class="playground-panel active">
+                <div class="form-group">
+                    <label for="hash-input">Input Data</label>
+                    <textarea id="hash-input" class="input-field" placeholder="Type message here..." oninput="doLiveHash()">The quick brown fox jumps over the lazy dog</textarea>
+                </div>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label for="hash-algo">Algorithm</label>
+                    <select id="hash-algo" class="input-field" onchange="doLiveHash()" style="background-color: var(--card); border: 1px solid rgba(255,255,255,0.7); cursor: pointer;">
+                        <option value="SHA-256">SHA-256 (Secure Standard)</option>
+                        <option value="SHA-512">SHA-512 (Ultra Secure)</option>
+                        <option value="SHA-1">SHA-1 (Legacy / Weak)</option>
+                    </select>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Generated Hash (Hexadecimal)</label>
+                    <div class="output-container" id="hash-output">
+                        <span class="copy-badge" onclick="copyText('hash-output-text')">Copy</span>
+                        <span id="hash-output-text" style="padding-right: 48px; display: block; overflow-wrap: break-word; font-size: 0.8rem;">Hashing...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Compare Panel -->
+            <div id="compare-panel" class="playground-panel">
+                <p style="font-size: 0.85rem; margin-bottom: 12px;">Type similar text in both boxes to see integrity checking in action.</p>
+                <div class="playground-grid">
+                    <div class="form-group">
+                        <label for="comp-input-1">Text Source A</label>
+                        <input id="comp-input-1" type="text" class="input-field" value="Verify me" oninput="doCompareHash()">
+                        <div style="font-family: monospace; font-size: 0.75rem; color: var(--muted); margin-top: 4px; word-break: break-all;" id="comp-hash-1">...</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comp-input-2">Text Source B</label>
+                        <input id="comp-input-2" type="text" class="input-field" value="Verify me." oninput="doCompareHash()">
+                        <div style="font-family: monospace; font-size: 0.75rem; color: var(--muted); margin-top: 4px; word-break: break-all;" id="comp-hash-2">...</div>
+                    </div>
+                </div>
+                <div style="margin-top: 16px; text-align: center; font-family: 'NotoSans-SemiBold'; font-size: 0.9rem;" id="compare-result">
+                    Checking...
+                </div>
+            </div>
+        </div>
+
+        <!-- Hash Properties Card -->
+        <div class="info-card">
+            <div class="badge">Properties</div>
+            <h3>Core Requirements of Cryptographic Hashes</h3>
+            
+            <div class="bullet-point"><strong>One-Way:</strong> It must be mathematically impossible to reverse the hash. You cannot reconstruct "Input A" from "Hash A".</div>
+            <div class="bullet-point"><strong>Deterministic:</strong> The exact same input will always yield the exact same hash output.</div>
+            <div class="bullet-point"><strong>Collision Resistant:</strong> It must be practically impossible to find two different inputs that produce the identical output hash.</div>
+            <div class="bullet-point"><strong>Avalanche Effect:</strong> Even a tiny modification to the input data must cause a massive, unpredictable change in the resulting hash.</div>
+        </div>
+
+        <!-- Industry Standards Card -->
+        <div class="info-card">
+            <div class="badge">Standards</div>
+            <h3>Common Hashing Algorithms</h3>
+            
+            <div style="margin-top: 12px;">
+                <h4 style="margin: 0 0 4px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;">SHA-2 (Secure Hash Algorithm 2)</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 12px;">The global cryptographic standard. It includes <strong>SHA-256</strong> and <strong>SHA-512</strong>. It is widely used in secure web connections (HTTPS), software signing, and blockchains (like Bitcoin).</p>
+            </div>
+            
+            <div style="margin-top: 16px;">
+                <h4 style="margin: 0 0 4px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;">SHA-3 (Secure Hash Algorithm 3)</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 12px;">The newest standard family. It is mathematically distinct from SHA-2, designed to provide a secure alternative in case SHA-2 is ever compromised in the future.</p>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <h4 style="margin: 0 0 4px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;" class="text-error">MD5 & SHA-1 (Legacy / Insecure)</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0;">Old algorithms that are now considered cryptographically broken. Because computers can easily find "collisions" (two different files generating the same hash) in minutes, they are strictly used for fast non-security checksums and are never used for authentication or passwords.</p>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -38,6 +511,124 @@
         const frag = location.hash || '';
         backAnchor.setAttribute('href', base + frag);
     }
+
+    /* --- Interactive Playground Script --- */
+    
+    function switchTab(tab) {
+        const btnSingle = document.querySelector('.playground-tabs button:nth-child(1)');
+        const btnCompare = document.querySelector('.playground-tabs button:nth-child(2)');
+        const panelSingle = document.getElementById('single-panel');
+        const panelCompare = document.getElementById('compare-panel');
+        
+        if (tab === 'single') {
+            btnSingle.classList.add('active');
+            btnCompare.classList.remove('active');
+            panelSingle.classList.add('active');
+            panelCompare.classList.remove('active');
+            doLiveHash();
+        } else {
+            btnSingle.classList.remove('active');
+            btnCompare.classList.add('active');
+            panelSingle.classList.remove('active');
+            panelCompare.classList.add('active');
+            doCompareHash();
+        }
+    }
+
+    // Clipboard copying
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).textContent;
+        const badge = document.querySelector(`#${elementId}`).previousElementSibling;
+        
+        if (!text || text.includes('...') || text.includes('Error')) {
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = badge.textContent;
+            badge.textContent = "Copied! ✓";
+            badge.style.color = "var(--accent)";
+            badge.style.fontWeight = "bold";
+            setTimeout(() => {
+                badge.textContent = originalText;
+                badge.style.color = "";
+                badge.style.fontWeight = "";
+            }, 1500);
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+    }
+
+    // Fallback FNV-1a Hash Generator (for older contexts without SubtleCrypto)
+    function fallbackHash(text, algorithm) {
+        let h1 = 0x811c9dc5;
+        let h2 = 0xcbf29ce4;
+        for (let i = 0; i < text.length; i++) {
+            h1 = (h1 ^ text.charCodeAt(i)) * 0x01000193;
+            h2 = (h2 ^ text.charCodeAt(i)) * 0x00000100000001B3;
+        }
+        const len = algorithm === "SHA-512" ? 128 : (algorithm === "SHA-1" ? 40 : 64);
+        let out = (Math.abs(h1).toString(16) + Math.abs(h2).toString(16)).repeat(16);
+        return out.slice(0, len);
+    }
+
+    // Native WebCrypto digests
+    async function calculateHash(text, algorithm) {
+        if (!window.crypto || !window.crypto.subtle) {
+            return fallbackHash(text, algorithm);
+        }
+        try {
+            const msgUint8 = new TextEncoder().encode(text);
+            const hashBuffer = await crypto.subtle.digest(algorithm, msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex;
+        } catch (e) {
+            console.error("Hash error, fallback used:", e);
+            return fallbackHash(text, algorithm);
+        }
+    }
+
+    // Live triggers
+    async function doLiveHash() {
+        const input = document.getElementById('hash-input').value;
+        const algo = document.getElementById('hash-algo').value;
+        const outputEl = document.getElementById('hash-output-text');
+        
+        if (!input) {
+            outputEl.textContent = "";
+            return;
+        }
+        
+        outputEl.textContent = "Hashing...";
+        const hash = await calculateHash(input, algo);
+        outputEl.textContent = hash;
+    }
+
+    async function doCompareHash() {
+        const input1 = document.getElementById('comp-input-1').value;
+        const input2 = document.getElementById('comp-input-2').value;
+        const hash1El = document.getElementById('comp-hash-1');
+        const hash2El = document.getElementById('comp-hash-2');
+        const resultEl = document.getElementById('compare-result');
+        
+        const hash1 = await calculateHash(input1, "SHA-256");
+        const hash2 = await calculateHash(input2, "SHA-256");
+        
+        hash1El.textContent = "Hash: " + hash1.slice(0, 16) + "..." + hash1.slice(-8);
+        hash2El.textContent = "Hash: " + hash2.slice(0, 16) + "..." + hash2.slice(-8);
+        
+        if (hash1 === hash2) {
+            resultEl.innerHTML = '<span class="text-success">✔ Hashes Match (Data Integrity Verified)</span>';
+        } else {
+            resultEl.innerHTML = '<span class="text-error">✖ Hashes Differ (Data Altered/Corrupted)</span>';
+        }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+        doLiveHash();
+    });
     </script>
 </body>
 </html>

@@ -3,20 +3,287 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Elliptic Curve - Cryptography of the Vault</title>
+    <title>Elliptic Curve Cryptography - Cryptography of the Vault</title>
     <link rel="stylesheet" href="../assets/styles/colors.css">
     <link rel="stylesheet" href="../assets/styles/fonts.css">
     <link rel="stylesheet" href="../assets/styles/common.css">
+    <style>
+        /* Custom neomorphic layout for elliptic curve page */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: -8px -8px 16px var(--shadow1), 8px 8px 16px var(--shadow2);
+            transition: all 0.3s ease;
+        }
+
+        html[data-theme="dark"] .info-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            background: var(--bg);
+            color: var(--accent);
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* SVG Graph Styling */
+        .graph-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2);
+            margin: 16px 0;
+            position: relative;
+        }
+
+        svg.ecc-graph {
+            width: 100%;
+            height: 220px;
+            background: var(--card);
+            border-radius: 10px;
+            box-shadow: -3px -3px 6px var(--shadow1), 3px 3px 6px var(--shadow2);
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] svg.ecc-graph {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Interactive controls */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            width: 100%;
+            margin-bottom: 12px;
+        }
+
+        .slider-title {
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-control {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        /* Key Comparison table */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .comp-card {
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            text-align: center;
+        }
+
+        .comp-card h4 {
+            margin: 0 0 8px 0;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+
+        .comp-size {
+            font-size: 1.8rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        /* Success/Warning Text Classes */
+        .text-success { color: #10B981; }
+        .text-error { color: #EF4444; }
+        html[data-theme="dark"] .text-success { color: #34D399; }
+        html[data-theme="dark"] .text-error { color: #F87171; }
+
+        .bullet-point {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1.1;
+        }
+
+        /* Mobile overrides for long and narrow viewports */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            .info-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            svg.ecc-graph {
+                height: 180px;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-    <a href="../index.html" class="back-button" aria-label="Back to home">
-        <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
-    </a>
-    <h2>Elliptic Curve</h2>
+        <a href="../index.html" class="back-button" aria-label="Back to home">
+            <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+        </a>
+        <h2>Elliptic Curve</h2>
     </div>
-    <div class="content">
-        <p>This page will describe the elliptic curve cryptography used in the Vault.</p>
+
+    <div class="content container">
+        
+        <!-- Intro Card -->
+        <div class="info-card">
+            <div class="badge">Overview</div>
+            <h3>What is Elliptic Curve Cryptography?</h3>
+            <p>Elliptic Curve Cryptography (ECC) is a modern approach to public-key cryptography. Instead of relying on the difficulty of factoring giant prime numbers (like RSA does), ECC relies on the complex mathematics of points bouncing along a specific algebraic curve: <strong>y² = x³ + ax + b</strong>.</p>
+            
+            <p>Because of the unique geometric properties of these curves, ECC offers **the exact same security level as traditional standards but with much smaller keys**. This results in faster cryptographic handshakes, lower memory usage, and significantly reduced battery consumption.</p>
+        </div>
+
+        <!-- Analogy Card -->
+        <div class="info-card">
+            <div class="badge">Analogy</div>
+            <h3>The Billiard Table Metaphor</h3>
+            <p>Imagine a pool table with a very strange, curved shape.
+            <ol style="margin-left: 20px; font-size: 0.9rem; line-height: 1.5;">
+                <li style="margin-bottom: 6px;">You place a ball at a starting point <strong>P</strong>.</li>
+                <li style="margin-bottom: 6px;">You hit the ball, and it bounces off the curved walls. You draw a line through its path, bounce it to another point, and repeat this process exactly <strong>d</strong> times (where <strong>d</strong> is your secret Private Key).</li>
+                <li style="margin-bottom: 6px;">The final coordinate where the ball stops is your Public Key <strong>Q</strong> (written as <strong>Q = d · P</strong>).</li>
+                <li>Anyone can see the starting point (P) and the ending point (Q), but because of the geometry of the curve, it is mathematically impossible to calculate how many times (d) you bounced the ball.</li>
+            </ol>
+            </p>
+        </div>
+
+        <!-- Interactive Playground -->
+        <div class="info-card">
+            <div class="badge">Interactive Tool</div>
+            <h3>Curve Multiplier Visualizer</h3>
+            <p>Slide the multiplier slider below to see how point multiplication (representing private key calculation) hops coordinates dynamically along the curve <strong>y² = x³ - 4x + 6</strong>.</p>
+            
+            <!-- SVG Plotter -->
+            <div class="graph-box">
+                <svg class="ecc-graph" id="ecc-svg" viewBox="0 0 300 200">
+                    <!-- Grid Lines -->
+                    <line x1="0" y1="100" x2="300" y2="100" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,2"/>
+                    <line x1="150" y1="0" x2="150" y2="200" stroke="var(--border)" stroke-width="1" stroke-dasharray="2,2"/>
+                    
+                    <!-- Elliptic Curve Path -->
+                    <path id="curve-path" d="" fill="none" stroke="var(--accent)" stroke-width="2.5" opacity="0.6"/>
+                    
+                    <!-- Point Connection Line -->
+                    <line id="bounce-line" x1="150" y1="100" x2="150" y2="100" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="4,4" opacity="0"/>
+                    
+                    <!-- Start Point P -->
+                    <circle id="point-p" cx="0" cy="0" r="6" fill="#10B981" opacity="0"/>
+                    <text id="label-p" x="0" y="0" font-family="sans-serif" font-size="10" font-weight="bold" fill="#10B981" dx="8" dy="-4">P</text>
+                    
+                    <!-- Calculated Point Q -->
+                    <circle id="point-q" cx="0" cy="0" r="6" fill="#EF4444" opacity="0"/>
+                    <text id="label-q" x="0" y="0" font-family="sans-serif" font-size="10" font-weight="bold" fill="#EF4444" dx="8" dy="-4">Q</text>
+                </svg>
+
+                <div class="slider-group">
+                    <div class="slider-title">
+                        <span>Multiplier / Private Key (d)</span>
+                        <span id="multiplier-display" style="color: var(--accent); font-family: 'NotoSans-SemiBold';">1</span>
+                    </div>
+                    <input type="range" min="1" max="10" value="1" class="slider-control" id="multiplier-slider" oninput="updatePlot()">
+                </div>
+            </div>
+
+            <div style="font-family: monospace; font-size: 0.85rem; text-align: center;">
+                Q = <span id="math-multiply">1</span> · P &nbsp;|&nbsp; 
+                Q Coordinate: (<span id="coord-x">0.0</span>, <span id="coord-y">0.0</span>)
+            </div>
+        </div>
+
+        <!-- Key Comparison Card -->
+        <div class="info-card">
+            <div class="badge">Efficiency</div>
+            <h3>ECC vs. RSA Key Sizes</h3>
+            <p>The main advantage of Elliptic Curve Cryptography is efficiency. To match the security of standard ECC keys, traditional RSA keys must grow exponentially larger:</p>
+            
+            <div class="comparison-grid">
+                <div class="comp-card">
+                    <h4>ECC Key Size</h4>
+                    <div class="comp-size">256 bits</div>
+                    <span style="font-size: 0.75rem; color: var(--muted);">Modern Standard</span>
+                </div>
+                <div class="comp-card">
+                    <h4>Equivalent RSA Key</h4>
+                    <div class="comp-size">3072 bits</div>
+                    <span style="font-size: 0.75rem; color: var(--muted);">Large & Slow</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 16px;">
+                <div class="bullet-point"><strong>Fewer CPU Cycles:</strong> Storing and processing a 256-bit key requires significantly less computing power than a 3072-bit key.</div>
+                <div class="bullet-point"><strong>Less Bandwidth:</strong> Handshakes on secure connections use smaller packets, accelerating secure session initialization.</div>
+                <div class="bullet-point"><strong>Gold Standard for Mobile:</strong> Mobile OS platforms use ECC to encrypt storage and keys inside hardware Secure Enclaves without causing UI lag or battery drain.</div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -38,6 +305,107 @@
         const frag = location.hash || '';
         backAnchor.setAttribute('href', base + frag);
     }
+
+    /* --- Elliptic Curve Plotting Script --- */
+    
+    // Coordinates on y^2 = x^3 - 4x + 6
+    // Scaled to fit 300x200 SVG (Center 150, 100)
+    // Scale X = 32, Scale Y = 18
+    const eccPoints = [
+        { x: 0.5, y: -2.03 },  // P (1P)
+        { x: 2.0, y: 2.45 },   // 2P
+        { x: -1.2, y: -3.02 }, // 3P
+        { x: 3.0, y: 4.58 },   // 4P
+        { x: -1.8, y: 2.72 },  // 5P
+        { x: 1.0, y: -1.73 },  // 6P
+        { x: -0.5, y: 2.81 },  // 7P
+        { x: 2.5, y: -3.41 },  // 8P
+        { x: -2.0, y: 2.45 },  // 9P
+        { x: 0.0, y: -2.45 }   // 10P
+    ];
+
+    function plotCurve() {
+        const pathEl = document.getElementById('curve-path');
+        let pointsTop = [];
+        let pointsBottom = [];
+        const minX = -2.15;
+        const maxX = 3.5;
+        const steps = 120;
+        
+        for (let i = 0; i <= steps; i++) {
+            let x = minX + (maxX - minX) * (i / steps);
+            let val = x * x * x - 4 * x + 6;
+            if (val >= 0) {
+                let y = Math.sqrt(val);
+                let svgX = 150 + x * 35;
+                let svgYTop = 100 - y * 18;
+                let svgYBottom = 100 + y * 18;
+                pointsTop.push(`${svgX},${svgYTop}`);
+                pointsBottom.unshift(`${svgX},${svgYBottom}`);
+            }
+        }
+        
+        const d = "M " + pointsTop.join(" L ") + " L " + pointsBottom.join(" L ");
+        pathEl.setAttribute('d', d);
+    }
+
+    function updatePlot() {
+        const dVal = parseInt(document.getElementById('multiplier-slider').value);
+        document.getElementById('multiplier-display').textContent = dVal;
+        document.getElementById('math-multiply').textContent = dVal;
+        
+        const ptP = eccPoints[0];
+        const ptQ = eccPoints[dVal - 1];
+        
+        document.getElementById('coord-x').textContent = ptQ.x.toFixed(1);
+        document.getElementById('coord-y').textContent = ptQ.y.toFixed(1);
+        
+        // Translate to SVG coords
+        const svgXP = 150 + ptP.x * 35;
+        const svgYP = 100 - ptP.y * 18;
+        const svgXQ = 150 + ptQ.x * 35;
+        const svgYQ = 100 - ptQ.y * 18;
+        
+        // Plot P
+        const circleP = document.getElementById('point-p');
+        const labelP = document.getElementById('label-p');
+        circleP.setAttribute('cx', svgXP);
+        circleP.setAttribute('cy', svgYP);
+        circleP.setAttribute('opacity', 1);
+        labelP.setAttribute('x', svgXP);
+        labelP.setAttribute('y', svgYP);
+        
+        // Plot Q
+        const circleQ = document.getElementById('point-q');
+        const labelQ = document.getElementById('label-q');
+        circleQ.setAttribute('cx', svgXQ);
+        circleQ.setAttribute('cy', svgYQ);
+        circleQ.setAttribute('opacity', 1);
+        labelQ.setAttribute('x', svgXQ);
+        labelQ.setAttribute('y', svgYQ);
+        labelQ.setAttribute('dx', dVal === 1 ? '16' : '8'); // avoid text overlap
+        
+        if (dVal === 1) {
+            labelQ.textContent = "Q (1P)";
+            document.getElementById('bounce-line').setAttribute('opacity', 0);
+        } else {
+            labelQ.textContent = `Q (${dVal}P)`;
+            
+            // Draw bounce line from P to Q
+            const bounceLine = document.getElementById('bounce-line');
+            bounceLine.setAttribute('x1', svgXP);
+            bounceLine.setAttribute('y1', svgYP);
+            bounceLine.setAttribute('x2', svgXQ);
+            bounceLine.setAttribute('y2', svgYQ);
+            bounceLine.setAttribute('opacity', 0.8);
+        }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+        plotCurve();
+        updatePlot();
+    });
     </script>
 </body>
 </html>

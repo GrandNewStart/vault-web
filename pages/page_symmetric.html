@@ -7,16 +7,478 @@
     <link rel="stylesheet" href="../assets/styles/colors.css">
     <link rel="stylesheet" href="../assets/styles/fonts.css">
     <link rel="stylesheet" href="../assets/styles/common.css">
+    <style>
+        /* Custom neomorphic layout for symmetric encryption page */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: -8px -8px 16px var(--shadow1), 8px 8px 16px var(--shadow2);
+            transition: all 0.3s ease;
+        }
+
+        html[data-theme="dark"] .info-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-card h3 .icon-img-tint {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            background: var(--bg);
+            color: var(--accent);
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Diagram Styling */
+        .diagram-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2);
+            margin: 16px 0;
+        }
+
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            position: relative;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .diagram-node {
+            background: var(--card);
+            padding: 12px 16px;
+            border-radius: 10px;
+            box-shadow: -4px -4px 8px var(--shadow1), 4px 4px 8px var(--shadow2);
+            font-family: 'NotoSans-Medium', sans-serif;
+            font-size: 0.85rem;
+            text-align: center;
+            min-width: 110px;
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] .diagram-node {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .diagram-arrow {
+            font-size: 1.25rem;
+            color: var(--accent);
+            user-select: none;
+            animation: pulseArrow 2s infinite ease-in-out;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .diagram-key-connection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card);
+            box-shadow: -3px -3px 6px var(--shadow1), 3px 3px 6px var(--shadow2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] .key-icon-container {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .key-icon-container img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        /* Interactive Playground Styling */
+        .playground-tabs {
+            display: flex;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: inset -2px -2px 5px var(--shadow1), inset 2px 2px 5px var(--shadow2);
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--card);
+            color: var(--text);
+            box-shadow: -4px -4px 8px var(--shadow1), 4px 4px 8px var(--shadow2);
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+
+        html[data-theme="dark"] .tab-btn.active {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .playground-panel {
+            display: none;
+            animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .playground-panel.active {
+            display: block;
+        }
+
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 600px) {
+            .playground-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .input-field {
+            background: var(--bg);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text);
+            font-family: 'NotoSans-Regular', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2), 0 0 0 1px var(--accent);
+        }
+
+        textarea.input-field {
+            resize: vertical;
+            min-height: 72px;
+        }
+
+        .output-container {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            min-height: 48px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            color: var(--text);
+            position: relative;
+            user-select: text;
+        }
+
+        .copy-badge {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: var(--card);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.85);
+            box-shadow: -2px -2px 4px var(--shadow1), 2px 2px 4px var(--shadow2);
+            font-family: 'NotoSans-Medium', sans-serif;
+            color: var(--muted);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        html[data-theme="dark"] .copy-badge {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .copy-badge:hover {
+            color: var(--text);
+            filter: brightness(1.05);
+        }
+
+        .copy-badge:active {
+            box-shadow: inset -1px -1px 2px var(--shadow1), inset 1px 1px 2px var(--shadow2);
+        }
+
+        /* Success/Warning Text Classes */
+        .text-success { color: #10B981; }
+        .text-error { color: #EF4444; }
+        html[data-theme="dark"] .text-success { color: #34D399; }
+        html[data-theme="dark"] .text-error { color: #F87171; }
+
+        .bullet-point {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1.1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseArrow {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        /* Mobile overrides for long and narrow viewports */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            .info-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .diagram-flow {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .diagram-arrow {
+                transform: rotate(90deg);
+                margin: 4px 0;
+            }
+
+            .diagram-node {
+                width: 100%;
+                max-width: 220px;
+            }
+
+            .playground-tabs {
+                gap: 4px;
+                padding: 4px;
+            }
+
+            .tab-btn {
+                padding: 8px;
+                font-size: 0.78rem;
+            }
+
+            .playground-grid {
+                gap: 12px;
+            }
+
+            .input-field {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-    <a href="../index.html" class="back-button" aria-label="Back to home">
-        <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
-    </a>
-    <h2>Symmetric Encryption</h2>
+        <a href="../index.html" class="back-button" aria-label="Back to home">
+            <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+        </a>
+        <h2>Symmetric Encryption</h2>
     </div>
-    <div class="content">
-        <p>This page will describe the symmetric encryption techniques used in the Vault.</p>
+
+    <div class="content container">
+        
+        <!-- Intro Card -->
+        <div class="info-card">
+            <div class="badge">Overview</div>
+            <h3>What is Symmetric Cryptography?</h3>
+            <p>Symmetric cryptography is the foundational method of securing data. The term <strong>symmetric</strong> refers to the fact that <strong>the same secret key</strong> is used for both encrypting the plaintext and decrypting the ciphertext.</p>
+            
+            <p>Think of it like a physical lockbox. You write a secret message, put it in the box, and lock it using a key. For a friend to read the message, they must use the exact same key to unlock the box. If they don't have the key, the box remains sealed.</p>
+        </div>
+
+        <!-- Diagram Card -->
+        <div class="info-card">
+            <div class="badge">Visualization</div>
+            <h3>The Shared Key Flow</h3>
+            <p>In a symmetric encryption system, the data flow looks like this:</p>
+            
+            <div class="diagram-box">
+                <div class="diagram-flow">
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Step 1</div>
+                        <div style="font-family: 'NotoSans-SemiBold'; font-size: 0.9rem; margin-top: 2px;">Plaintext</div>
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: monospace;">"MySecretData"</div>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-key-connection">
+                        <div class="key-icon-container">
+                            <img src="../assets/images/icon_key.png" class="icon-img" alt="Key" />
+                        </div>
+                        <span style="font-size: 0.75rem; font-family: 'NotoSans-SemiBold'; color: var(--accent);">Shared Key</span>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Step 2</div>
+                        <div style="font-family: 'NotoSans-SemiBold'; font-size: 0.9rem; margin-top: 2px;">Ciphertext</div>
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: monospace;">U2FsdGVk...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Playground -->
+        <div class="info-card">
+            <div class="badge">Interactive Tool</div>
+            <h3>Symmetric Encryption Playground</h3>
+            <p>Experiment with real-time symmetric encryption. Type a message and key below to see how it scrambles into ciphertext using native browser cryptography.</p>
+            
+            <div class="playground-tabs">
+                <button class="tab-btn active" onclick="switchTab('encrypt')">🔒 Encrypt</button>
+                <button class="tab-btn" onclick="switchTab('decrypt')">🔓 Decrypt</button>
+            </div>
+            
+            <!-- Encrypt Tab -->
+            <div id="encrypt-panel" class="playground-panel active">
+                <div class="playground-grid">
+                    <div class="form-group">
+                        <label for="enc-message">Plaintext Message</label>
+                        <textarea id="enc-message" class="input-field" placeholder="Enter secret message..." oninput="doLiveEncrypt()">Meet me at the vault at midnight</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="enc-key">Secret Key (Shared)</label>
+                        <input id="enc-key" type="text" class="input-field" placeholder="Enter key..." value="my-vault-key" oninput="doLiveEncrypt()">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Encrypted Ciphertext (Base64)</label>
+                    <div class="output-container" id="enc-output">
+                        <span class="copy-badge" onclick="copyText('enc-output-text')">Copy</span>
+                        <span id="enc-output-text" style="padding-right: 48px; display: block; overflow-wrap: break-word;">Encrypting...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Decrypt Tab -->
+            <div id="decrypt-panel" class="playground-panel">
+                <div class="playground-grid">
+                    <div class="form-group">
+                        <label for="dec-ciphertext">Ciphertext (Base64)</label>
+                        <textarea id="dec-ciphertext" class="input-field" placeholder="Paste Base64 ciphertext..." oninput="doLiveDecrypt()"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="dec-key">Secret Key (Shared)</label>
+                        <input id="dec-key" type="text" class="input-field" placeholder="Enter key..." value="my-vault-key" oninput="doLiveDecrypt()">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Decrypted Plaintext</label>
+                    <div class="output-container" id="dec-output">
+                        <span class="copy-badge" onclick="copyText('dec-output-text')">Copy</span>
+                        <span id="dec-output-text" style="padding-right: 48px; display: block; overflow-wrap: break-word;">Enter ciphertext and key to decrypt...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strengths / Weaknesses Card -->
+        <div class="info-card">
+            <div class="badge">Pros & Cons</div>
+            <h3>Advantages & Challenges</h3>
+            
+            <div style="margin-top: 12px;">
+                <h4 style="margin: 0 0 8px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;" class="text-success">✔ The Advantages</h4>
+                <div class="bullet-point"><strong>High Performance:</strong> Extremely fast encryption/decryption makes it perfect for local storage, files, database encryption, and video streams.</div>
+                <div class="bullet-point"><strong>Battery Efficient:</strong> Requires very low CPU power, which is critical for conserving battery life on mobile devices.</div>
+                <div class="bullet-point"><strong>Highly Secure:</strong> AES-256 is mathematically robust enough to be considered unbreakable by brute force.</div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <h4 style="margin: 0 0 8px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;" class="text-error">⚠️ The Core Challenges</h4>
+                <div class="bullet-point"><strong>Key Distribution:</strong> The sender and receiver must safely exchange the key. Sharing the key across an insecure network exposes it to interception.</div>
+                <div class="bullet-point"><strong>Key Management:</strong> If you talk to multiple people, you need a unique key for each conversation. Storing and managing millions of keys is extremely difficult.</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -38,6 +500,192 @@
         const frag = location.hash || '';
         backAnchor.setAttribute('href', base + frag);
     }
+
+    /* --- Interactive Playground Script --- */
+    
+    // Tab switching
+    function switchTab(tab) {
+        const btnEncrypt = document.querySelector('.playground-tabs button:nth-child(1)');
+        const btnDecrypt = document.querySelector('.playground-tabs button:nth-child(2)');
+        const panelEncrypt = document.getElementById('encrypt-panel');
+        const panelDecrypt = document.getElementById('decrypt-panel');
+        
+        if (tab === 'encrypt') {
+            btnEncrypt.classList.add('active');
+            btnDecrypt.classList.remove('active');
+            panelEncrypt.classList.add('active');
+            panelDecrypt.classList.remove('active');
+            doLiveEncrypt();
+        } else {
+            btnEncrypt.classList.remove('active');
+            btnDecrypt.classList.add('active');
+            panelEncrypt.classList.remove('active');
+            panelDecrypt.classList.add('active');
+            
+            // UX Feature: Automatically transfer generated ciphertext to decrypt input
+            const encText = document.getElementById('enc-output-text').textContent;
+            const decInput = document.getElementById('dec-ciphertext');
+            if (encText && encText !== 'Encrypting...' && encText !== 'Error') {
+                decInput.value = encText;
+            }
+            doLiveDecrypt();
+        }
+    }
+
+    // Clipboard copying
+    function copyText(elementId) {
+        const text = document.getElementById(elementId).textContent;
+        const badge = document.querySelector(`#${elementId}`).previousElementSibling;
+        
+        if (!text || text.includes('...') || text.includes('Failed')) {
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = badge.textContent;
+            badge.textContent = "Copied! ✓";
+            badge.style.color = "var(--accent)";
+            badge.style.fontWeight = "bold";
+            setTimeout(() => {
+                badge.textContent = originalText;
+                badge.style.color = "";
+                badge.style.fontWeight = "";
+            }, 1500);
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+    }
+
+    // Fallback Crypto (XOR-based)
+    function fallbackEncrypt(text, key) {
+        if (!key) key = "default";
+        let result = "";
+        for (let i = 0; i < text.length; i++) {
+            const charCode = text.charCodeAt(i);
+            const keyChar = key.charCodeAt(i % key.length);
+            const encryptedChar = charCode ^ keyChar;
+            result += encryptedChar.toString(16).padStart(2, '0');
+        }
+        return btoa(result);
+    }
+
+    function fallbackDecrypt(ciphertextB64, key) {
+        if (!key) key = "default";
+        try {
+            const hex = atob(ciphertextB64);
+            let result = "";
+            for (let i = 0; i < hex.length; i += 2) {
+                const hexChar = hex.slice(i, i + 2);
+                if (!hexChar) break;
+                const charCode = parseInt(hexChar, 16);
+                const keyChar = key.charCodeAt((i / 2) % key.length);
+                const decryptedChar = charCode ^ keyChar;
+                result += String.fromCharCode(decryptedChar);
+            }
+            return result;
+        } catch(e) {
+            return "[Decryption Failed: Invalid Ciphertext or Key]";
+        }
+    }
+
+    // AES-GCM Key Derivation and Operations
+    async function digestKey(keyString) {
+        const msgUint8 = new TextEncoder().encode(keyString || "default-key");
+        const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+        return crypto.subtle.importKey(
+            'raw',
+            hashBuffer,
+            { name: 'AES-GCM' },
+            false,
+            ['encrypt', 'decrypt']
+        );
+    }
+
+    async function encryptAES(text, keyString) {
+        if (!window.crypto || !window.crypto.subtle) {
+            return fallbackEncrypt(text, keyString);
+        }
+        try {
+            const key = await digestKey(keyString);
+            // Fixed 12-byte IV for deterministic outputs in playground (easier for visual demo)
+            const iv = new Uint8Array([118, 97, 117, 108, 116, 95, 115, 101, 99, 114, 101, 116]); // "vault_secret"
+            const encoded = new TextEncoder().encode(text);
+            const encrypted = await crypto.subtle.encrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                encoded
+            );
+            const bytes = new Uint8Array(encrypted);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        } catch (e) {
+            console.error("AES Encryption error, fallback used:", e);
+            return fallbackEncrypt(text, keyString);
+        }
+    }
+
+    async function decryptAES(ciphertextB64, keyString) {
+        if (!window.crypto || !window.crypto.subtle) {
+            return fallbackDecrypt(ciphertextB64, keyString);
+        }
+        try {
+            const key = await digestKey(keyString);
+            const iv = new Uint8Array([118, 97, 117, 108, 116, 95, 115, 101, 99, 114, 101, 116]);
+            const binary = atob(ciphertextB64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const decrypted = await crypto.subtle.decrypt(
+                { name: 'AES-GCM', iv: iv },
+                key,
+                bytes
+            );
+            return new TextDecoder().decode(decrypted);
+        } catch (e) {
+            // Fall back to trying fallback decryption in case it was XOR-encrypted
+            return fallbackDecrypt(ciphertextB64, keyString);
+        }
+    }
+
+    // Live triggers
+    async function doLiveEncrypt() {
+        const message = document.getElementById('enc-message').value;
+        const key = document.getElementById('enc-key').value;
+        const outputEl = document.getElementById('enc-output-text');
+        
+        if (!message) {
+            outputEl.textContent = "";
+            return;
+        }
+        
+        outputEl.textContent = "Encrypting...";
+        const ciphertext = await encryptAES(message, key);
+        outputEl.textContent = ciphertext;
+    }
+
+    async function doLiveDecrypt() {
+        const ciphertext = document.getElementById('dec-ciphertext').value;
+        const key = document.getElementById('dec-key').value;
+        const outputEl = document.getElementById('dec-output-text');
+        
+        if (!ciphertext) {
+            outputEl.textContent = "Enter ciphertext and key to decrypt...";
+            return;
+        }
+        
+        outputEl.textContent = "Decrypting...";
+        const plaintext = await decryptAES(ciphertext, key);
+        outputEl.textContent = plaintext;
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+        doLiveEncrypt();
+    });
     </script>
 </body>
 </html>

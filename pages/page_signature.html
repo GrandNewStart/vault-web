@@ -3,20 +3,618 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signature - Cryptography of the Vault</title>
+    <title>Digital Signatures - Cryptography of the Vault</title>
     <link rel="stylesheet" href="../assets/styles/colors.css">
     <link rel="stylesheet" href="../assets/styles/fonts.css">
     <link rel="stylesheet" href="../assets/styles/common.css">
+    <style>
+        /* Custom neomorphic layout for signature page */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: -8px -8px 16px var(--shadow1), 8px 8px 16px var(--shadow2);
+            transition: all 0.3s ease;
+        }
+
+        html[data-theme="dark"] .info-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            background: var(--bg);
+            color: var(--accent);
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Diagram Styling */
+        .diagram-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2);
+            margin: 16px 0;
+        }
+
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            width: 100%;
+            position: relative;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .diagram-node {
+            background: var(--card);
+            padding: 12px 16px;
+            border-radius: 10px;
+            box-shadow: -4px -4px 8px var(--shadow1), 4px 4px 8px var(--shadow2);
+            font-family: 'NotoSans-Medium', sans-serif;
+            font-size: 0.85rem;
+            text-align: center;
+            min-width: 100px;
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] .diagram-node {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .diagram-arrow {
+            font-size: 1.25rem;
+            color: var(--accent);
+            user-select: none;
+            animation: pulseArrow 2s infinite ease-in-out;
+            display: inline-block;
+            transition: transform 0.3s ease;
+        }
+
+        .diagram-key-connection {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .key-icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card);
+            box-shadow: -3px -3px 6px var(--shadow1), 3px 3px 6px var(--shadow2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+        html[data-theme="dark"] .key-icon-container {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .key-icon-container img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        /* Color Tints using precise CSS filters for Black Icons */
+        .tint-green {
+            filter: invert(53%) sepia(85%) saturate(415%) hue-rotate(113deg) brightness(92%) contrast(88%);
+        }
+        .tint-red {
+            filter: invert(38%) sepia(74%) saturate(2250%) hue-rotate(338deg) brightness(98%) contrast(96%);
+        }
+
+        /* Interactive Playground Styling */
+        .playground-tabs {
+            display: flex;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 6px;
+            box-shadow: inset -2px -2px 5px var(--shadow1), inset 2px 2px 5px var(--shadow2);
+            margin-bottom: 20px;
+            gap: 8px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 10px;
+            border-radius: 8px;
+            color: var(--muted);
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab-btn.active {
+            background: var(--card);
+            color: var(--text);
+            box-shadow: -4px -4px 8px var(--shadow1), 4px 4px 8px var(--shadow2);
+            border: 1px solid rgba(255,255,255,0.85);
+        }
+
+        html[data-theme="dark"] .tab-btn.active {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .playground-panel {
+            display: none;
+            animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .playground-panel.active {
+            display: block;
+        }
+
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 600px) {
+            .playground-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.8rem;
+            color: var(--text);
+        }
+
+        .input-field {
+            background: var(--bg);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text);
+            font-family: 'NotoSans-Regular', sans-serif;
+            font-size: 0.9rem;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2), 0 0 0 1px var(--accent);
+        }
+
+        textarea.input-field {
+            resize: vertical;
+            min-height: 72px;
+        }
+
+        .key-box-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            margin-bottom: 20px;
+        }
+
+        .key-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 8px 12px;
+            background: var(--card);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.85);
+            box-shadow: -2px -2px 4px var(--shadow1), 2px 2px 4px var(--shadow2);
+        }
+
+        html[data-theme="dark"] .key-row {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .key-title {
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .key-string {
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: var(--muted);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 180px;
+            user-select: all;
+        }
+
+        @media(min-width: 450px) {
+            .key-string {
+                max-width: 280px;
+            }
+        }
+
+        .output-container {
+            background: var(--bg);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            min-height: 48px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            color: var(--text);
+            position: relative;
+            user-select: text;
+        }
+
+        .copy-badge {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background: var(--card);
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.85);
+            box-shadow: -2px -2px 4px var(--shadow1), 2px 2px 4px var(--shadow2);
+            font-family: 'NotoSans-Medium', sans-serif;
+            color: var(--muted);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        html[data-theme="dark"] .copy-badge {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .copy-badge:hover {
+            color: var(--text);
+            filter: brightness(1.05);
+        }
+
+        .copy-badge:active {
+            box-shadow: inset -1px -1px 2px var(--shadow1), inset 1px 1px 2px var(--shadow2);
+        }
+
+        /* Success/Warning Text Classes */
+        .text-success { color: #10B981; }
+        .text-error { color: #EF4444; }
+        html[data-theme="dark"] .text-success { color: #34D399; }
+        html[data-theme="dark"] .text-error { color: #F87171; }
+
+        .bullet-point {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1.1;
+        }
+
+        .btn {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.85);
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text);
+            cursor: pointer;
+            box-shadow: -3px -3px 6px var(--shadow1), 3px 3px 6px var(--shadow2);
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        html[data-theme="dark"] .btn {
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .btn:hover {
+            filter: brightness(1.02);
+            box-shadow: -5px -5px 10px var(--shadow3), 5px 5px 10px var(--shadow4);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+            box-shadow: -2px -2px 4px var(--shadow3), 2px 2px 4px var(--shadow4);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            color: #FFFFFF;
+            border: none;
+            box-shadow: -3px -3px 6px var(--shadow1), 3px 3px 6px var(--shadow2);
+        }
+
+        .btn-accent:hover {
+            filter: brightness(1.08);
+        }
+
+        /* Mobile overrides for long and narrow viewports */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            .info-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .diagram-flow {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .diagram-arrow {
+                transform: rotate(90deg);
+                margin: 4px 0;
+            }
+
+            .diagram-node {
+                width: 100%;
+                max-width: 220px;
+            }
+
+            .playground-tabs {
+                gap: 4px;
+                padding: 4px;
+            }
+
+            .tab-btn {
+                padding: 8px;
+                font-size: 0.78rem;
+            }
+
+            .playground-grid {
+                gap: 12px;
+            }
+
+            .input-field {
+                padding: 8px 10px;
+                font-size: 0.85rem;
+            }
+
+            .key-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .key-string {
+                max-width: 100%;
+                text-align: left;
+                background: var(--bg);
+                padding: 4px 6px;
+                border-radius: 6px;
+            }
+
+            .key-row .btn {
+                align-self: flex-end;
+                width: auto;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulseArrow {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-    <a href="../index.html" class="back-button" aria-label="Back to home">
-        <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
-    </a>
-    <h2>Signature</h2>
+        <a href="../index.html" class="back-button" aria-label="Back to home">
+            <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+        </a>
+        <h2>Digital Signatures</h2>
     </div>
-    <div class="content">
-        <p>This page will describe the digital signature techniques used in the Vault.</p>
+
+    <div class="content container">
+        
+        <!-- Intro Card -->
+        <div class="info-card">
+            <div class="badge">Overview</div>
+            <h3>What is a Digital Signature?</h3>
+            <p>A digital signature is a cryptographic mechanism used to verify the **authenticity** and **integrity** of digital messages or documents. It is the digital equivalent of a handwritten signature or a wax seal, but infinitely more secure.</p>
+            
+            <p>Think of it like a **wax seal combined with a signet ring**:
+            <ol style="margin-left: 20px; font-size: 0.9rem;">
+                <li style="margin-bottom: 6px;">Only you possess the unique signet ring (<strong>Private Key</strong>) to stamp the seal.</li>
+                <li style="margin-bottom: 6px;">Anyone can compare the stamped seal against your public crest (<strong>Public Key</strong>) to verify it came from you.</li>
+                <li>If anyone attempts to alter the message inside the envelope, the wax seal breaks (<strong>Integrity Verification</strong>).</li>
+            </ol>
+            </p>
+        </div>
+
+        <!-- Diagram Card -->
+        <div class="info-card">
+            <div class="badge">Visualization</div>
+            <h3>The Signing & Verification Flow</h3>
+            <p>To sign, the sender encrypts the message hash with their Private Key. To verify, the recipient decrypts it with the sender's Public Key:</p>
+            
+            <div class="diagram-box">
+                <div class="diagram-flow">
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Step 1</div>
+                        <div style="font-family: 'NotoSans-SemiBold'; font-size: 0.9rem; margin-top: 2px;">Message</div>
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: monospace;">"Approved"</div>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-key-connection">
+                        <div class="key-icon-container" style="border-color: #EF4444;">
+                            <img src="../assets/images/icon_key.png" class="tint-red" alt="Private Key" />
+                        </div>
+                        <span style="font-size: 0.75rem; font-family: 'NotoSans-SemiBold'; color: #EF4444;">Sign (Private Key)</span>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Step 2</div>
+                        <div style="font-family: 'NotoSans-SemiBold'; font-size: 0.9rem; margin-top: 2px;">Signature</div>
+                        <div style="font-size: 0.75rem; color: var(--muted); margin-top: 4px; font-family: monospace;">a5d9f...</div>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-key-connection">
+                        <div class="key-icon-container" style="border-color: #10B981;">
+                            <img src="../assets/images/icon_key.png" class="tint-green" alt="Public Key" />
+                        </div>
+                        <span style="font-size: 0.75rem; font-family: 'NotoSans-SemiBold'; color: #10B981;">Verify (Public Key)</span>
+                    </div>
+                    
+                    <div class="diagram-arrow">➔</div>
+                    
+                    <div class="diagram-node">
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: var(--accent); font-family: 'NotoSans-SemiBold';">Step 3</div>
+                        <div style="font-family: 'NotoSans-SemiBold'; font-size: 0.9rem; margin-top: 2px;">Status</div>
+                        <div style="font-size: 0.75rem; color: #10B981; margin-top: 4px; font-family: 'NotoSans-SemiBold';">Valid ✓</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Playground -->
+        <div class="info-card">
+            <div class="badge">Interactive Tool</div>
+            <h3>Signature Sandbox</h3>
+            <p>Generate a keypair. Sign a message to create a signature, then test what happens if you try to verify it, or if you modify the message content.</p>
+            
+            <div class="key-box-container">
+                <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 0.8rem; font-family: 'NotoSans-SemiBold';">Your Signing Keys</span>
+                    <button class="btn btn-accent" style="padding: 6px 12px; font-size: 0.75rem;" onclick="regenerateKeys()">New Keypair</button>
+                </div>
+                <div class="key-row">
+                    <span class="key-title"><span style="color: #10B981;">🔓</span> Public Crest (Verify)</span>
+                    <span class="key-string" id="pub-key-display">Generating...</span>
+                    <span class="btn" style="padding: 2px 8px; font-size: 0.7rem; box-shadow: none;" onclick="copyText('pub-key-display')">Copy</span>
+                </div>
+                <div class="key-row">
+                    <span class="key-title"><span style="color: #EF4444;">🔑</span> Private Ring (Sign)</span>
+                    <span class="key-string" id="priv-key-display">Generating...</span>
+                    <span class="btn" style="padding: 2px 8px; font-size: 0.7rem; box-shadow: none;" onclick="copyText('priv-key-display')">Copy</span>
+                </div>
+            </div>
+
+            <div class="playground-tabs">
+                <button class="tab-btn active" onclick="switchTab('sign')">✍️ Sign Message</button>
+                <button class="tab-btn" onclick="switchTab('verify')">🔍 Verify Signature</button>
+            </div>
+            
+            <!-- Sign Tab -->
+            <div id="sign-panel" class="playground-panel active">
+                <div class="form-group">
+                    <label for="sign-message">Message to Sign</label>
+                    <textarea id="sign-message" class="input-field" placeholder="Enter message..." oninput="doLiveSign()">I approve this transaction of $100.00</textarea>
+                </div>
+                <div class="form-group" style="margin-top: 16px;">
+                    <label>Digital Signature (Base64)</label>
+                    <div class="output-container" id="sign-output">
+                        <span class="copy-badge" onclick="copyText('sign-output-text')">Copy</span>
+                        <span id="sign-output-text" style="padding-right: 48px; display: block; overflow-wrap: break-word;">Signing...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Verify Tab -->
+            <div id="verify-panel" class="playground-panel">
+                <div class="form-group">
+                    <label for="verify-message">Message Received</label>
+                    <textarea id="verify-message" class="input-field" placeholder="Enter message to verify..." oninput="doLiveVerify()"></textarea>
+                </div>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label for="verify-sig">Signature to Verify</label>
+                    <textarea id="verify-sig" class="input-field" placeholder="Paste signature here..." oninput="doLiveVerify()"></textarea>
+                </div>
+                <div style="margin-top: 20px; text-align: center; font-family: 'NotoSans-SemiBold'; font-size: 1rem;" id="verify-result">
+                    Checking...
+                </div>
+            </div>
+        </div>
+
+        <!-- Three Guarantees Card -->
+        <div class="info-card">
+            <div class="badge">Security Properties</div>
+            <h3>The Three Cryptographic Guarantees</h3>
+            
+            <div class="bullet-point"><strong>Authentication:</strong> Confirms who signed the message. Because only you have the Private Key, no one else could have created the signature.</div>
+            <div class="bullet-point"><strong>Integrity:</strong> Proves that the message has not been altered in transit. If even a single byte is changed, the signature verification immediately fails.</div>
+            <div class="bullet-point"><strong>Non-Repudiation:</strong> Prevents the signer from claiming they did not send the message, as their unique Private Key was required to generate the signature.</div>
+        </div>
+
     </div>
 
     <script>
@@ -38,6 +636,235 @@
         const frag = location.hash || '';
         backAnchor.setAttribute('href', base + frag);
     }
+
+    /* --- Interactive Playground Script --- */
+    
+    let activeKeyPair = null;
+
+    // Tab switching
+    function switchTab(tab) {
+        const btnSign = document.querySelector('.playground-tabs button:nth-child(1)');
+        const btnVerify = document.querySelector('.playground-tabs button:nth-child(2)');
+        const panelSign = document.getElementById('sign-panel');
+        const panelVerify = document.getElementById('verify-panel');
+        
+        if (tab === 'sign') {
+            btnSign.classList.add('active');
+            btnVerify.classList.remove('active');
+            panelSign.classList.add('active');
+            panelVerify.classList.remove('active');
+            doLiveSign();
+        } else {
+            btnSign.classList.remove('active');
+            btnVerify.classList.add('active');
+            panelSign.classList.remove('active');
+            panelVerify.classList.add('active');
+            
+            // Transfer values for easy user interaction
+            const signMsg = document.getElementById('sign-message').value;
+            const signSig = document.getElementById('sign-output-text').textContent;
+            
+            const verifyMsg = document.getElementById('verify-message');
+            const verifySig = document.getElementById('verify-sig');
+            
+            if (signMsg && !verifyMsg.value) {
+                verifyMsg.value = signMsg;
+            }
+            if (signSig && signSig !== 'Signing...' && signSig !== 'Error' && !verifySig.value) {
+                verifySig.value = signSig;
+            }
+            
+            doLiveVerify();
+        }
+    }
+
+    // Clipboard copying
+    function copyText(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el.dataset.fullKey || el.textContent;
+        const badge = el.previousElementSibling || el.nextElementSibling;
+        
+        if (!text || text.includes('...') || text.includes('Failed')) {
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(() => {
+            const originalText = badge.textContent;
+            badge.textContent = "Copied! ✓";
+            badge.style.color = "var(--accent)";
+            badge.style.fontWeight = "bold";
+            setTimeout(() => {
+                badge.textContent = originalText;
+                badge.style.color = "";
+                badge.style.fontWeight = "";
+            }, 1500);
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+    }
+
+    // Fallback Sign/Verify Simulator (Deterministic Mock)
+    function fallbackGenerateKeyPair() {
+        const mockPub = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0pubkeySignVerifyFallbackCrestEnabled...";
+        const mockPriv = "MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDprivkeySignVerifyFallbackRingEnabled...";
+        
+        document.getElementById('pub-key-display').textContent = mockPub.slice(0, 36) + "...";
+        document.getElementById('pub-key-display').dataset.fullKey = mockPub;
+        document.getElementById('priv-key-display').textContent = mockPriv.slice(0, 36) + "...";
+        document.getElementById('priv-key-display').dataset.fullKey = mockPriv;
+        
+        activeKeyPair = "fallback";
+    }
+
+    function fallbackSign(message) {
+        let h1 = 0x811c9dc5;
+        for (let i = 0; i < message.length; i++) {
+            h1 = (h1 ^ message.charCodeAt(i)) * 0x01000193;
+        }
+        return btoa("MOCK_SIGNATURE[" + Math.abs(h1).toString(16) + "]");
+    }
+
+    function fallbackVerify(message, signatureB64) {
+        try {
+            const expected = fallbackSign(message);
+            return expected === signatureB64;
+        } catch(e) {
+            return false;
+        }
+    }
+
+    // WebCrypto RSASSA-PKCS1-v1_5
+    async function generateKeyPair() {
+        if (!window.crypto || !window.crypto.subtle) {
+            fallbackGenerateKeyPair();
+            return;
+        }
+        
+        try {
+            activeKeyPair = await window.crypto.subtle.generateKey(
+                {
+                    name: "RSASSA-PKCS1-v1_5",
+                    modulusLength: 2048,
+                    publicExponent: new Uint8Array([1, 0, 1]),
+                    hash: "SHA-256"
+                },
+                true,
+                ["sign", "verify"]
+            );
+            
+            const pubExported = await window.crypto.subtle.exportKey("spki", activeKeyPair.publicKey);
+            const privExported = await window.crypto.subtle.exportKey("pkcs8", activeKeyPair.privateKey);
+            
+            const pubB64 = btoa(String.fromCharCode(...new Uint8Array(pubExported)));
+            const privB64 = btoa(String.fromCharCode(...new Uint8Array(privExported)));
+            
+            document.getElementById('pub-key-display').textContent = pubB64.slice(0, 36) + "...";
+            document.getElementById('pub-key-display').dataset.fullKey = pubB64;
+            document.getElementById('priv-key-display').textContent = privB64.slice(0, 36) + "...";
+            document.getElementById('priv-key-display').dataset.fullKey = privB64;
+        } catch (e) {
+            console.error("RSA Keypair generation failed:", e);
+            fallbackGenerateKeyPair();
+        }
+    }
+
+    async function signRSA(text) {
+        if (activeKeyPair === "fallback" || !activeKeyPair) {
+            return fallbackSign(text);
+        }
+        try {
+            const enc = new TextEncoder();
+            const signature = await window.crypto.subtle.sign(
+                "RSASSA-PKCS1-v1_5",
+                activeKeyPair.privateKey,
+                enc.encode(text)
+            );
+            const bytes = new Uint8Array(signature);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        } catch (e) {
+            console.error("Signing error, fallback used:", e);
+            return fallbackSign(text);
+        }
+    }
+
+    async function verifyRSA(text, signatureB64) {
+        if (activeKeyPair === "fallback" || !activeKeyPair) {
+            return fallbackVerify(text, signatureB64);
+        }
+        try {
+            const enc = new TextEncoder();
+            const binary = atob(signatureB64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            const isValid = await window.crypto.subtle.verify(
+                "RSASSA-PKCS1-v1_5",
+                activeKeyPair.publicKey,
+                bytes,
+                enc.encode(text)
+            );
+            return isValid;
+        } catch (e) {
+            return fallbackVerify(text, signatureB64);
+        }
+    }
+
+    async function regenerateKeys() {
+        document.getElementById('pub-key-display').textContent = "Generating...";
+        document.getElementById('priv-key-display').textContent = "Generating...";
+        await generateKeyPair();
+        doLiveSign();
+        const verifyInput = document.getElementById('verify-sig');
+        if (verifyInput.value) {
+            doLiveVerify();
+        }
+    }
+
+    // Live triggers
+    async function doLiveSign() {
+        const message = document.getElementById('sign-message').value;
+        const outputEl = document.getElementById('sign-output-text');
+        
+        if (!message) {
+            outputEl.textContent = "";
+            return;
+        }
+        
+        outputEl.textContent = "Signing...";
+        const signature = await signRSA(message);
+        outputEl.textContent = signature;
+    }
+
+    async function doLiveVerify() {
+        const message = document.getElementById('verify-message').value;
+        const signature = document.getElementById('verify-sig').value;
+        const resultEl = document.getElementById('verify-result');
+        
+        if (!message || !signature) {
+            resultEl.innerHTML = '<span style="color: var(--muted);">Waiting for input message and signature...</span>';
+            return;
+        }
+        
+        resultEl.textContent = "Checking...";
+        const isValid = await verifyRSA(message, signature);
+        
+        if (isValid) {
+            resultEl.innerHTML = '<span class="text-success">✔ Signature Valid (Authenticity & Integrity Guaranteed)</span>';
+        } else {
+            resultEl.innerHTML = '<span class="text-error">✖ Signature Invalid (Message Tampered or Signed with Wrong Key)</span>';
+        }
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', async () => {
+        await generateKeyPair();
+        doLiveSign();
+    });
     </script>
 </body>
 </html>

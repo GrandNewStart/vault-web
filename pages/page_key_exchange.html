@@ -7,16 +7,332 @@
     <link rel="stylesheet" href="../assets/styles/colors.css">
     <link rel="stylesheet" href="../assets/styles/fonts.css">
     <link rel="stylesheet" href="../assets/styles/common.css">
+    <style>
+        /* Custom neomorphic layout for key exchange page */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .info-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: -8px -8px 16px var(--shadow1), 8px 8px 16px var(--shadow2);
+            transition: all 0.3s ease;
+        }
+
+        html[data-theme="dark"] .info-card {
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            background: var(--bg);
+            color: var(--accent);
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Color mixing diagram styles */
+        .color-mix-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            background: var(--bg);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: inset -3px -3px 6px var(--shadow1), inset 3px 3px 6px var(--shadow2);
+            margin: 16px 0;
+            align-items: center;
+            justify-content: space-around;
+        }
+
+        .color-swatch {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: background-color 0.3s ease;
+        }
+
+        .color-label {
+            font-size: 0.75rem;
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            margin-top: 4px;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .color-element {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 70px;
+        }
+
+        /* Interactive Sandbox controls */
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            background: var(--bg);
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+        }
+
+        .slider-title {
+            font-family: 'NotoSans-SemiBold', sans-serif;
+            font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .slider-control {
+            width: 100%;
+            cursor: pointer;
+            accent-color: var(--accent);
+        }
+
+        .playground-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        @media (min-width: 600px) {
+            .playground-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .math-box {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 14px;
+            box-shadow: inset -2px -2px 4px var(--shadow1), inset 2px 2px 4px var(--shadow2);
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .math-line {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed var(--border);
+            padding-bottom: 4px;
+        }
+
+        .math-line:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        /* Success/Warning Text Classes */
+        .text-success { color: #10B981; }
+        .text-error { color: #EF4444; }
+        html[data-theme="dark"] .text-success { color: #34D399; }
+        html[data-theme="dark"] .text-error { color: #F87171; }
+
+        .bullet-point {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .bullet-point::before {
+            content: "•";
+            color: var(--accent);
+            font-weight: bold;
+            font-size: 1.1rem;
+            line-height: 1.1;
+        }
+
+        /* Mobile overrides for long and narrow viewports */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            
+            .info-card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .playground-grid {
+                gap: 12px;
+            }
+
+            .color-mix-box {
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .color-swatch {
+                width: 36px;
+                height: 36px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="header">
-    <a href="../index.html" class="back-button" aria-label="Back to home">
-        <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
-    </a>
-    <h2>Key Exchange</h2>
+        <a href="../index.html" class="back-button" aria-label="Back to home">
+            <img src="../assets/images/icon_chevron_left.png" class="icon-img" alt="Back" style="width: 60%; height: 60%; object-fit: contain;" />
+        </a>
+        <h2>Key Exchange</h2>
     </div>
-    <div class="content">
-        <p>This page will describe the key exchange techniques used in the Vault.</p>
+
+    <div class="content container">
+        
+        <!-- Intro Card -->
+        <div class="info-card">
+            <div class="badge">Overview</div>
+            <h3>The Key Exchange Problem</h3>
+            <p>Symmetric encryption is fast and secure, but requires both parties to share the exact same key. If they have never met, how do they establish this key over the public internet without an eavesdropper stealing it? Sending the key in plain text compromises the entire system.</p>
+            
+            <p><strong>Key Exchange</strong> algorithms solve this problem. They allow two parties (Alice and Bob) to create a shared secret key over an insecure connection, even when an eavesdropper (Eve) is watching every packet of data they transmit.</p>
+        </div>
+
+        <!-- Analogy Card -->
+        <div class="info-card">
+            <div class="badge">Analogy</div>
+            <h3>The Paint-Mixing Metaphor</h3>
+            <p>The standard way to understand key exchange (specifically the Diffie-Hellman algorithm) is by using paint colors:</p>
+            <ol style="margin-left: 20px; font-size: 0.9rem; line-height: 1.5;">
+                <li style="margin-bottom: 6px;">Alice and Bob agree on a common <strong>Public Color</strong> (e.g., Yellow).</li>
+                <li style="margin-bottom: 6px;">Alice and Bob each select a secret <strong>Private Color</strong> (Alice chooses Red, Bob chooses Blue).</li>
+                <li style="margin-bottom: 6px;">Alice mixes her private color (Red) with the public color (Yellow) to get Orange, and sends it to Bob. Bob mixes his private color (Blue) with the public color (Yellow) to get Light Blue, and sends it to Alice.</li>
+                <li style="margin-bottom: 6px;">Eve the eavesdropper sees the public Yellow and the mixtures (Orange and Light Blue). However, unmixing colors is mathematically hard.</li>
+                <li>Finally, Alice adds her private color (Red) to Bob's mixture (Light Blue), and Bob adds his private color (Blue) to Alice's mixture (Orange). Both arrive at the exact same secret color (Purple)!</li>
+            </ol>
+        </div>
+
+        <!-- Interactive Playground -->
+        <div class="info-card">
+            <div class="badge">Interactive Tool</div>
+            <h3>Diffie-Hellman Sandbox</h3>
+            <p>Adjust Alice and Bob's private numbers using the sliders. Notice how the mathematics guarantees they calculate the identical shared secret key, while the values sent over the wire never reveal it.</p>
+            
+            <div style="font-size: 0.8rem; font-family: 'NotoSans-SemiBold'; margin-bottom: 8px;">Public Parameters: Base (g) = 5, Modulus (p) = 23</div>
+
+            <div class="playground-grid">
+                <!-- Alice Section -->
+                <div class="slider-group">
+                    <div class="slider-title">
+                        <span>👩 Alice's Private Value (a)</span>
+                        <span id="alice-val" style="color: var(--accent);">6</span>
+                    </div>
+                    <input type="range" min="1" max="22" value="6" class="slider-control" id="alice-slider" oninput="doLiveExchange()">
+                </div>
+                
+                <!-- Bob Section -->
+                <div class="slider-group">
+                    <div class="slider-title">
+                        <span>👨 Bob's Private Value (b)</span>
+                        <span id="bob-val" style="color: var(--accent);">15</span>
+                    </div>
+                    <input type="range" min="1" max="22" value="15" class="slider-control" id="bob-slider" oninput="doLiveExchange()">
+                </div>
+            </div>
+
+            <!-- Color Swatches Visualizer -->
+            <div class="color-mix-box">
+                <div class="color-element">
+                    <div class="color-swatch" id="swatch-pub" style="background-color: hsl(60, 80%, 50%);"></div>
+                    <span class="color-label">Public Base</span>
+                </div>
+                <div style="font-size: 1.2rem; color: var(--muted);">+</div>
+                <div class="color-element">
+                    <div class="color-swatch" id="swatch-alice-mix"></div>
+                    <span class="color-label">Alice's Mix</span>
+                </div>
+                <div style="font-size: 1.2rem; color: var(--muted);">=</div>
+                <div class="color-element">
+                    <div class="color-swatch" id="swatch-shared" style="border-width: 3px;"></div>
+                    <span class="color-label" style="font-family:'NotoSans-SemiBold';">Shared Secret</span>
+                </div>
+                <div style="font-size: 1.2rem; color: var(--muted);">=</div>
+                <div class="color-element">
+                    <div class="color-swatch" id="swatch-bob-mix"></div>
+                    <span class="color-label">Bob's Mix</span>
+                </div>
+                <div style="font-size: 1.2rem; color: var(--muted);">+</div>
+                <div class="color-element">
+                    <div class="color-swatch" id="swatch-pub-2" style="background-color: hsl(60, 80%, 50%);"></div>
+                    <span class="color-label">Public Base</span>
+                </div>
+            </div>
+
+            <!-- Mathematical Output -->
+            <div class="math-box">
+                <div class="math-line">
+                    <span>Alice Computes (A = g^a mod p):</span>
+                    <span id="math-alice-pub">5^6 mod 23 = 8</span>
+                </div>
+                <div class="math-line">
+                    <span>Bob Computes (B = g^b mod p):</span>
+                    <span id="math-bob-pub">5^15 mod 23 = 19</span>
+                </div>
+                <div class="math-line" style="margin-top: 4px; border-top: 1px dashed var(--border); padding-top: 8px;">
+                    <span>Alice calculates Shared Secret (B^a mod p):</span>
+                    <span id="math-alice-secret">19^6 mod 23 = 2</span>
+                </div>
+                <div class="math-line">
+                    <span>Bob calculates Shared Secret (A^b mod p):</span>
+                    <span id="math-bob-secret">8^15 mod 23 = 2</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px; text-align: center; font-family: 'NotoSans-SemiBold'; font-size: 1rem;" class="text-success">
+                ✔ Established Shared Key: <span id="shared-key-value">2</span>
+            </div>
+        </div>
+
+        <!-- Algorithms Card -->
+        <div class="info-card">
+            <div class="badge">Protocols</div>
+            <h3>Key Exchange Algorithms</h3>
+            
+            <div style="margin-top: 12px;">
+                <h4 style="margin: 0 0 4px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;">Diffie-Hellman (DH)</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 12px;">The original protocol invented in 1976. It uses the mathematics of discrete logarithms to allow two parties to securely generate a secret key.</p>
+            </div>
+            
+            <div style="margin-top: 16px;">
+                <h4 style="margin: 0 0 4px 0; font-family: 'NotoSans-SemiBold'; font-size: 0.95rem;">ECDH (Elliptic Curve Diffie-Hellman)</h4>
+                <p style="font-size: 0.9rem; margin-bottom: 0;">The modern standard. Instead of large integers, it uses elliptic curves. ECDH provides equivalent security to classical DH but with much smaller keys, leading to faster handshakes and lower CPU usage (essential for mobile devices).</p>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -38,6 +354,64 @@
         const frag = location.hash || '';
         backAnchor.setAttribute('href', base + frag);
     }
+
+    /* --- Interactive Playground Script --- */
+    
+    // Efficient modular exponentiation: (base^exp) % mod
+    function powerMod(base, exp, mod) {
+        let res = 1;
+        base = base % mod;
+        while (exp > 0) {
+            if (exp % 2 === 1) res = (res * base) % mod;
+            base = (base * base) % mod;
+            exp = Math.floor(exp / 2);
+        }
+        return res;
+    }
+
+    // Convert values to corresponding HSL colors dynamically
+    function numberToHsl(num) {
+        // Map numbers 0-22 to distinct color hues (0-360 degrees)
+        const hue = (num * 16) % 360;
+        return `hsl(${hue}, 80%, 45%)`;
+    }
+
+    function doLiveExchange() {
+        const a = parseInt(document.getElementById('alice-slider').value);
+        const b = parseInt(document.getElementById('bob-slider').value);
+        
+        document.getElementById('alice-val').textContent = a;
+        document.getElementById('bob-val').textContent = b;
+        
+        const g = 5;
+        const p = 23;
+        
+        // Calculations
+        const A = powerMod(g, a, p); // Alice's public mix
+        const B = powerMod(g, b, p); // Bob's public mix
+        
+        const sAlice = powerMod(B, a, p); // Alice's shared secret
+        const sBob = powerMod(A, b, p); // Bob's shared secret
+        
+        // Update Math Strings
+        document.getElementById('math-alice-pub').textContent = `${g}^${a} mod ${p} = ${A}`;
+        document.getElementById('math-bob-pub').textContent = `${g}^${b} mod ${p} = ${B}`;
+        
+        document.getElementById('math-alice-secret').textContent = `${B}^${a} mod ${p} = ${sAlice}`;
+        document.getElementById('math-bob-secret').textContent = `${A}^${b} mod ${p} = ${sBob}`;
+        
+        document.getElementById('shared-key-value').textContent = sAlice;
+        
+        // Update Visual Swatches
+        document.getElementById('swatch-alice-mix').style.backgroundColor = numberToHsl(A);
+        document.getElementById('swatch-bob-mix').style.backgroundColor = numberToHsl(B);
+        document.getElementById('swatch-shared').style.backgroundColor = numberToHsl(sAlice);
+    }
+
+    // Init
+    window.addEventListener('DOMContentLoaded', () => {
+        doLiveExchange();
+    });
     </script>
 </body>
 </html>
